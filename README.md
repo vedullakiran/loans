@@ -1,6 +1,6 @@
 # Loan Management Application - Setup Guide
 
-This guide provides instructions on how to set up and run the Loan Management Application.
+The Loan Management Application is a Java-based application for managing loan applications, loans, repayments, and payment terms. This README provides an overview of the application and instructions for setting it up and using it.
 
 ## Prerequisites
 
@@ -17,4 +17,8 @@ Before you begin, ensure you have met the following requirements:
 Follow these steps to download and set up the Loan Management Application:
 
 1. Clone the repository:
+   ```
+   git clone https://github.com/vedullakiran/loans.git)https://github.com/vedullakiran/loans.git
+2. 
+
 
