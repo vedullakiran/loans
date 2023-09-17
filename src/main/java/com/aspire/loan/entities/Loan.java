@@ -17,7 +17,11 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long loanApplicationId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "loanApplicationId")
+    private LoanApplication loanApplication;
+
+    private Long loanAppId;
     private LoanStatus status;
     private String userId;
     private BigDecimal amountSanctioned;

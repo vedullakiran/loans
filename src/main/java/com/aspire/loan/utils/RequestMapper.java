@@ -4,7 +4,6 @@ import com.aspire.loan.entities.Loan;
 import com.aspire.loan.entities.LoanApplication;
 import com.aspire.loan.entities.Repayment;
 import com.aspire.loan.entities.enums.LoanStatus;
-import com.aspire.loan.entities.enums.RepaymentStatus;
 import com.aspire.loan.request.LoanApplicationRequestDTO;
 import com.aspire.loan.request.RepaymentRequestDTO;
 import com.aspire.loan.response.LoanApplicationResponseDTO;
@@ -51,7 +50,7 @@ public class RequestMapper {
 
     public Loan getLoan(LoanApplication application) {
         return new Loan()
-                .setLoanApplicationId(application.getId())
+                .setLoanApplication(application)
                 .setUserId(application.getUserId())
                 .setStatus(LoanStatus.APPROVED)
                 .setAmountRepaid(BigDecimal.ZERO)
@@ -61,7 +60,7 @@ public class RequestMapper {
     public static LoanResponseDTO getLoanDTO(Loan loan) {
         return new LoanResponseDTO()
                 .setId(loan.getId())
-                .setLoanApplicationId(loan.getLoanApplicationId())
+                .setLoanApplicationId(loan.getLoanApplication().getId())
                 .setStatus(loan.getStatus())
                 .setUserId(loan.getUserId())
                 .setAmountSanctioned(loan.getAmountSanctioned())
