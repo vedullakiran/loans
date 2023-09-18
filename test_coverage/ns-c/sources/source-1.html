@@ -1,0 +1,188 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > DefaultRepaymentStrategy</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.strategy.repayment</a>
+</div>
+
+<h1>Coverage Summary for Class: DefaultRepaymentStrategy (com.aspire.loan.strategy.repayment)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DefaultRepaymentStrategy</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.1%
+  </span>
+  <span class="absValue">
+    (34/35)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.strategy.repayment;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.Loan;
+&nbsp;import com.aspire.loan.entities.PaymentTerm;
+&nbsp;import com.aspire.loan.entities.Repayment;
+&nbsp;import com.aspire.loan.entities.enums.LoanStatus;
+&nbsp;import com.aspire.loan.entities.enums.PaymentTermStatus;
+&nbsp;import com.aspire.loan.services.PaymentTermService;
+&nbsp;import com.aspire.loan.services.RepaymentService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.*;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Component
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class DefaultRepaymentStrategy implements RepaymentStrategy {
+&nbsp;    private final PaymentTermService paymentTermService;
+&nbsp;    private final RepaymentService repaymentService;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public void processRepayment(Loan loan, Repayment repayment) {
+<b class="fc">&nbsp;        log.info(&quot;Processing repayment for Loan ID: {}&quot;, loan.getId());</b>
+&nbsp;
+<b class="fc">&nbsp;        Set&lt;PaymentTermStatus&gt; paymentTermStatuses = new HashSet&lt;&gt;(Arrays.asList(PaymentTermStatus.PENDING, PaymentTermStatus.PARTIALLY_PAID));</b>
+<b class="fc">&nbsp;        List&lt;PaymentTerm&gt; unpaidTerms = paymentTermService.getPaymentTermsForLoanByStatus(loan.getId(), paymentTermStatuses);</b>
+<b class="fc">&nbsp;        List&lt;PaymentTerm&gt; updatedTerms = new ArrayList&lt;&gt;();</b>
+<b class="fc">&nbsp;        loan.setStatus(LoanStatus.REPAY_IN_PROGRESS);</b>
+&nbsp;
+<b class="fc">&nbsp;        BigDecimal remainingRepaymentAmount = repayment.getAmount();</b>
+&nbsp;
+<b class="fc">&nbsp;        for (PaymentTerm term : unpaidTerms) {</b>
+<b class="fc">&nbsp;            BigDecimal termDueAmount = term.getTermAmount();</b>
+<b class="fc">&nbsp;            BigDecimal termRemainingAmount = termDueAmount.subtract(term.getAmountPaid());</b>
+&nbsp;
+<b class="fc">&nbsp;            if (remainingRepaymentAmount.compareTo(termRemainingAmount) &gt;= 0) {</b>
+<b class="fc">&nbsp;                fullyRepayTerm(term, termDueAmount);</b>
+<b class="fc">&nbsp;                remainingRepaymentAmount = remainingRepaymentAmount.subtract(termRemainingAmount);</b>
+&nbsp;            } else {
+<b class="fc">&nbsp;                partiallyRepayTerm(term, remainingRepaymentAmount);</b>
+<b class="fc">&nbsp;                remainingRepaymentAmount = BigDecimal.ZERO;</b>
+&nbsp;            }
+<b class="fc">&nbsp;            updatedTerms.add(term);</b>
+<b class="fc">&nbsp;            if (remainingRepaymentAmount.compareTo(BigDecimal.ZERO) &lt;= 0) {</b>
+<b class="fc">&nbsp;                break;</b>
+&nbsp;            }
+<b class="fc">&nbsp;        }</b>
+&nbsp;
+<b class="fc">&nbsp;        updateLoanStatusAndAmountRepaid(loan, repayment);</b>
+<b class="fc">&nbsp;        paymentTermService.updatePaymentTerms(updatedTerms);</b>
+&nbsp;
+<b class="fc">&nbsp;        repaymentService.createRepayment(repayment);</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Repayment processed successfully for Loan ID: {}&quot;, loan.getId());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void fullyRepayTerm(PaymentTerm term, BigDecimal termDueAmount) {
+<b class="fc">&nbsp;        term.setAmountPaid(termDueAmount);</b>
+<b class="fc">&nbsp;        term.setStatus(PaymentTermStatus.PAID);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void partiallyRepayTerm(PaymentTerm term, BigDecimal repaymentAmount) {
+<b class="fc">&nbsp;        BigDecimal updatedAmountPaid = term.getAmountPaid().add(repaymentAmount);</b>
+<b class="fc">&nbsp;        term.setAmountPaid(updatedAmountPaid);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (updatedAmountPaid.compareTo(term.getTermAmount()) &gt;= 0) {</b>
+<b class="nc">&nbsp;            term.setStatus(PaymentTermStatus.PAID);</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            term.setStatus(PaymentTermStatus.PARTIALLY_PAID);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private void updateLoanStatusAndAmountRepaid(Loan loan, Repayment repayment) {
+<b class="fc">&nbsp;        BigDecimal totalAmountRepaid = loan.getAmountRepaid().add(repayment.getAmount());</b>
+<b class="fc">&nbsp;        loan.setAmountRepaid(totalAmountRepaid);</b>
+&nbsp;
+<b class="fc">&nbsp;        if (loan.getAmountRepaid().equals(loan.getLoanApplication().getAmountRequested())) {</b>
+<b class="fc">&nbsp;            loan.setStatus(LoanStatus.REPAID);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > RepaymentServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.services.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: RepaymentServiceImpl (com.aspire.loan.services.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RepaymentServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3</td>
+  </tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3$auxiliary$13t3k4DN</td>
+  </tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3$auxiliary$2ToE2br9</td>
+  </tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3$auxiliary$HDenmWkU</td>
+  </tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3$auxiliary$lhrCHAsz</td>
+  </tr>
+  <tr>
+    <td class="name">RepaymentServiceImpl$MockitoMock$Vtdh4YW3$auxiliary$XZc8Gw56</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/5)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.services.impl;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.Repayment;
+&nbsp;import com.aspire.loan.exceptions.EntityNotFoundException;
+&nbsp;import com.aspire.loan.repositories.RepaymentRepository;
+&nbsp;import com.aspire.loan.services.RepaymentService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class RepaymentServiceImpl implements RepaymentService {
+&nbsp;    private final RepaymentRepository repository;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;Repayment&gt; getAllRepayments(Long loanId) {
+<b class="fc">&nbsp;        return repository.getRepaymentByLoanId(loanId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Repayment getRepaymentById(Long id) {
+<b class="fc">&nbsp;        return repository.findById(id).orElseThrow(() -&gt; new EntityNotFoundException(&quot;Loan application not found&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public Repayment createRepayment(Repayment repayment) {
+<b class="fc">&nbsp;        return repository.save(repayment);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

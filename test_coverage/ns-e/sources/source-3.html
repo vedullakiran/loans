@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoanValidation</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.validation</a>
+</div>
+
+<h1>Coverage Summary for Class: LoanValidation (com.aspire.loan.validation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoanValidation</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10%
+  </span>
+  <span class="absValue">
+    (1/10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoanValidation$MockitoMock$LRMIGM7v</td>
+  </tr>
+  <tr>
+    <td class="name">LoanValidation$MockitoMock$LRMIGM7v$auxiliary$LcpV6iRY</td>
+  </tr>
+  <tr>
+    <td class="name">LoanValidation$MockitoMock$LRMIGM7v$auxiliary$LSgrt26k</td>
+  </tr>
+  <tr>
+    <td class="name">LoanValidation$MockitoMock$LRMIGM7v$auxiliary$tfk1xwcs</td>
+  </tr>
+  <tr>
+    <td class="name">LoanValidation$MockitoMock$LRMIGM7v$auxiliary$v5fI2Pq7</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10%
+  </span>
+  <span class="absValue">
+    (1/10)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.validation;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.Loan;
+&nbsp;import com.aspire.loan.entities.enums.LoanStatus;
+&nbsp;import com.aspire.loan.exceptions.InvalidLoanStatusException;
+&nbsp;import com.aspire.loan.exceptions.UserAccessDeniedException;
+&nbsp;import com.aspire.loan.exceptions.ValidateRequestException;
+&nbsp;import com.aspire.loan.request.RepaymentRequestDTO;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class LoanValidation {
+&nbsp;
+&nbsp;    public void validateLoanEligibility(Loan loan, RepaymentRequestDTO requestDTO) {
+&nbsp;        // Additional status checks
+<b class="nc">&nbsp;        if (loan.getStatus() == LoanStatus.REPAID) {</b>
+<b class="nc">&nbsp;            throw new InvalidLoanStatusException(&quot;Loan has already been repaid.&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        if (!loan.getLoanApplication().getUserId().equals(requestDTO.getUserId())) {</b>
+<b class="nc">&nbsp;            throw new UserAccessDeniedException(&quot;User does not have access for this loan&quot;);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        validateLoanAmount(loan, requestDTO.getAmount());</b>
+&nbsp;    }
+&nbsp;    public void validateLoanAmount(Loan loan, BigDecimal amount) {
+<b class="nc">&nbsp;        BigDecimal totalAmountToBePaid = calculateTotalAmountToBePaid(loan);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (amount.compareTo(totalAmountToBePaid) &gt; 0) {</b>
+<b class="nc">&nbsp;            throw new ValidateRequestException(&quot;Repayment amount exceeds the total amount to be paid for the loan.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    private BigDecimal calculateTotalAmountToBePaid(Loan loan) {
+<b class="nc">&nbsp;        return loan.getLoanApplication().getAmountRequested().subtract(loan.getAmountRepaid());</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

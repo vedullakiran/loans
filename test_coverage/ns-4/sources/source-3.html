@@ -1,0 +1,163 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoanController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.controllers</a>
+</div>
+
+<h1>Coverage Summary for Class: LoanController (com.aspire.loan.controllers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoanController</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (1/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    8.3%
+  </span>
+  <span class="absValue">
+    (1/12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.controllers;
+&nbsp;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.PaymentTerm;
+&nbsp;import com.aspire.loan.entities.Repayment;
+&nbsp;import com.aspire.loan.entities.enums.LoanStatus;
+&nbsp;import com.aspire.loan.entities.enums.PaymentTermStatus;
+&nbsp;import com.aspire.loan.request.RepaymentRequestDTO;
+&nbsp;import com.aspire.loan.response.LoanResponseDTO;
+&nbsp;import com.aspire.loan.services.LoanService;
+&nbsp;import com.aspire.loan.services.PaymentTermService;
+&nbsp;import com.aspire.loan.services.RepaymentService;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Set;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/loan&quot;)
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class LoanController {
+&nbsp;    private final LoanService loanService;
+&nbsp;    private final PaymentTermService paymentTermService;
+&nbsp;    private final RepaymentService repaymentService;
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{loanId}&quot;)
+&nbsp;    ResponseEntity&lt;LoanResponseDTO&gt; getLoanApplication(@PathVariable Long loanId, @RequestHeader String userId) {
+<b class="nc">&nbsp;        LoanResponseDTO loan = loanService.getLoanById(loanId, userId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(loan);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{loanId}/paymentTerms&quot;)
+&nbsp;    ResponseEntity&lt;List&lt;PaymentTerm&gt;&gt; getPaymentTerms(@PathVariable Long loanId, @RequestParam(name = &quot;statuses&quot;, required = false) Set&lt;PaymentTermStatus&gt; statuses) {
+<b class="nc">&nbsp;        List&lt;PaymentTerm&gt; paymentTerms = paymentTermService.getPaymentTermsForLoanByStatus(loanId, statuses);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(paymentTerms);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{loanId}/repayments&quot;)
+&nbsp;    ResponseEntity&lt;List&lt;Repayment&gt;&gt; getRepayments(@PathVariable Long loanId) {
+<b class="nc">&nbsp;        List&lt;Repayment&gt; loanRepayments = repaymentService.getAllRepayments(loanId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(loanRepayments);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/{loanId}/repayments&quot;)
+&nbsp;    ResponseEntity&lt;LoanResponseDTO&gt; repayLoan(@PathVariable Long loanId, @RequestBody RepaymentRequestDTO requestDTO,  @RequestHeader String userId) {
+<b class="nc">&nbsp;        requestDTO.setUserId(userId);</b>
+<b class="nc">&nbsp;        LoanResponseDTO loanResponseDTO = loanService.repayLoan(loanId, requestDTO);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(loanResponseDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping
+&nbsp;    ResponseEntity&lt;List&lt;LoanResponseDTO&gt;&gt; getAllLoans(@RequestHeader String userId ,@RequestParam(name = &quot;statuses&quot;, required = false) Set&lt;LoanStatus&gt; statuses) {
+<b class="nc">&nbsp;        List&lt;LoanResponseDTO&gt; loanResponseDTO = loanService.getLoansForUser(userId, statuses);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(loanResponseDTO);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

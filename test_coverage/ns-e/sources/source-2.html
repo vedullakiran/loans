@@ -1,0 +1,178 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoanApplicationValidation</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.validation</a>
+</div>
+
+<h1>Coverage Summary for Class: LoanApplicationValidation (com.aspire.loan.validation)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoanApplicationValidation</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+  <span class="absValue">
+    (1/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoanApplicationValidation$MockitoMock$vuBYZuVF</td>
+  </tr>
+  <tr>
+    <td class="name">LoanApplicationValidation$MockitoMock$vuBYZuVF$auxiliary$2kNFykY7</td>
+  </tr>
+  <tr>
+    <td class="name">LoanApplicationValidation$MockitoMock$vuBYZuVF$auxiliary$COZJ1kwh</td>
+  </tr>
+  <tr>
+    <td class="name">LoanApplicationValidation$MockitoMock$vuBYZuVF$auxiliary$EBK1Mdsc</td>
+  </tr>
+  <tr>
+    <td class="name">LoanApplicationValidation$MockitoMock$vuBYZuVF$auxiliary$OuNfvX21</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.2%
+  </span>
+  <span class="absValue">
+    (1/16)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.validation;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.LoanApplication;
+&nbsp;import com.aspire.loan.entities.enums.LoanApplicationStatus;
+&nbsp;import com.aspire.loan.exceptions.EntityNotFoundException;
+&nbsp;import com.aspire.loan.exceptions.ValidateRequestException;
+&nbsp;import com.aspire.loan.request.AdminActionRequestDTO;
+&nbsp;import com.aspire.loan.request.LoanApplicationRequestDTO;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;public class LoanApplicationValidation {</b>
+&nbsp;
+&nbsp;    public void validateLoanApplicationRequest(LoanApplicationRequestDTO request) {
+<b class="nc">&nbsp;        if (request == null) {</b>
+<b class="nc">&nbsp;            throw new ValidateRequestException(&quot;Loan application request cannot be null.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        validateAmount(request.getAmount());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void validateAmount(BigDecimal amount) {
+<b class="nc">&nbsp;        if (amount == null || amount.compareTo(BigDecimal.ZERO) &lt;= 0) {</b>
+<b class="nc">&nbsp;            throw new ValidateRequestException(&quot;Loan amount requested/approved must be greater than zero.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    public void validateAdminActionRequest(AdminActionRequestDTO request, LoanApplication loanApplication) {
+<b class="nc">&nbsp;        if (request == null) {</b>
+<b class="nc">&nbsp;            throw new ValidateRequestException(&quot;Admin action request cannot be null.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (loanApplication == null) {</b>
+<b class="nc">&nbsp;            throw new EntityNotFoundException(&quot;Loan application not found for the given ID.&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        LoanApplicationStatus currentStatus = loanApplication.getStatus();</b>
+&nbsp;
+&nbsp;        // Validate status transitions (e.g., only certain transitions are allowed)
+<b class="nc">&nbsp;        if (!isValidStatusTransition(currentStatus, request.getStatus())) {</b>
+<b class="nc">&nbsp;            throw new ValidateRequestException(&quot;Invalid status transition.&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    }
+&nbsp;
+&nbsp;    private boolean isValidStatusTransition(LoanApplicationStatus currentStatus, LoanApplicationStatus newStatus) {
+<b class="nc">&nbsp;        if (currentStatus == LoanApplicationStatus.PENDING) {</b>
+<b class="nc">&nbsp;            return newStatus == LoanApplicationStatus.APPROVED || newStatus == LoanApplicationStatus.DECLINED;</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return false; // Default to false for invalid transitions</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,200 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > LoanApplicationServiceImpl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.services.impl</a>
+</div>
+
+<h1>Coverage Summary for Class: LoanApplicationServiceImpl (com.aspire.loan.services.impl)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoanApplicationServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/30)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoanApplicationServiceImpl$$EnhancerBySpringCGLIB$$ff93629f</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (7/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (30/30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.services.impl;
+&nbsp;
+&nbsp;
+&nbsp;import com.aspire.loan.command.StatusUpdateCommandFactory;
+&nbsp;import com.aspire.loan.entities.LoanApplication;
+&nbsp;import com.aspire.loan.entities.enums.LoanApplicationStatus;
+&nbsp;import com.aspire.loan.exceptions.EntityNotFoundException;
+&nbsp;import com.aspire.loan.repositories.LoanApplicationRepository;
+&nbsp;import com.aspire.loan.request.AdminActionRequestDTO;
+&nbsp;import com.aspire.loan.request.LoanApplicationRequestDTO;
+&nbsp;import com.aspire.loan.response.LoanApplicationResponseDTO;
+&nbsp;import com.aspire.loan.services.LoanApplicationService;
+&nbsp;import com.aspire.loan.utils.RequestMapper;
+&nbsp;import com.aspire.loan.validation.AccessControlValidation;
+&nbsp;import com.aspire.loan.validation.LoanApplicationValidation;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Service
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class LoanApplicationServiceImpl implements LoanApplicationService {
+&nbsp;    private final LoanApplicationRepository repository;
+&nbsp;    private final StatusUpdateCommandFactory statusUpdateCommandFactory;
+&nbsp;    private final LoanApplicationValidation loanApplicationValidation;
+&nbsp;    private final AccessControlValidation accessControlValidation;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public LoanApplicationResponseDTO createLoanApplication(LoanApplicationRequestDTO request) {
+<b class="fc">&nbsp;        loanApplicationValidation.validateLoanApplicationRequest(request);</b>
+<b class="fc">&nbsp;        log.info(&quot;Creating a new loan application for user ID: {}&quot;, request.getUserId());</b>
+&nbsp;
+<b class="fc">&nbsp;        LoanApplication loanApplication = RequestMapper.getLoanApplication(request);</b>
+<b class="fc">&nbsp;        loanApplication.setStatus(LoanApplicationStatus.PENDING);</b>
+<b class="fc">&nbsp;        loanApplication.setUserId(request.getUserId());</b>
+<b class="fc">&nbsp;        loanApplication = repository.save(loanApplication);</b>
+&nbsp;
+<b class="fc">&nbsp;        log.info(&quot;Loan application created with ID: {}&quot;, loanApplication.getId());</b>
+<b class="fc">&nbsp;        return RequestMapper.getLoanApplicationResponseDTO(loanApplication);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public LoanApplicationResponseDTO getLoanApplicationById(Long id, String userId) {
+<b class="fc">&nbsp;        log.info(&quot;Fetching loan application by ID: {}&quot;, id);</b>
+<b class="fc">&nbsp;        LoanApplication loanApplication = repository.findById(id)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Loan application not found for ID:&quot; + id));</b>
+<b class="fc">&nbsp;        log.info(&quot;Loan application fetched successfully for ID: {}&quot;, id);</b>
+<b class="fc">&nbsp;        accessControlValidation.validateUserAccessToLoan(userId, loanApplication);</b>
+<b class="fc">&nbsp;        return RequestMapper.getLoanApplicationResponseDTO(loanApplication);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;LoanApplicationResponseDTO&gt; getUserLoanApplications(String userId) {
+<b class="fc">&nbsp;        log.info(&quot;Fetching loan applications for user ID: {}&quot;, userId);</b>
+<b class="fc">&nbsp;        List&lt;LoanApplication&gt; userLoanApplications = repository.findByUserId(userId);</b>
+<b class="fc">&nbsp;        log.info(&quot;Fetching loan applications for user ID: {}&quot;, userId);</b>
+<b class="fc">&nbsp;        return RequestMapper.getLoanApplicationResponseDTO(userLoanApplications);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public LoanApplicationResponseDTO loanApplicationStatusUpdate(Long loanApplicationId, AdminActionRequestDTO requestDTO) {
+<b class="fc">&nbsp;        log.info(&quot;Updating status for loan application with ID: {} to {}&quot;, loanApplicationId, requestDTO.getStatus());</b>
+&nbsp;
+<b class="fc">&nbsp;        LoanApplication loanApplication = repository.findById(loanApplicationId)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new EntityNotFoundException(&quot;Loan application not found for ID:&quot; + loanApplicationId));</b>
+<b class="fc">&nbsp;        loanApplicationValidation.validateAdminActionRequest(requestDTO, loanApplication);</b>
+&nbsp;
+<b class="fc">&nbsp;        statusUpdateCommandFactory.getCommand(requestDTO.getStatus()).execute(loanApplication, requestDTO);</b>
+<b class="fc">&nbsp;        repository.save(loanApplication);</b>
+<b class="fc">&nbsp;        log.info(&quot;Loan application status updated successfully for ID: {} to {}&quot;, loanApplicationId, requestDTO.getStatus());</b>
+<b class="fc">&nbsp;        return RequestMapper.getLoanApplicationResponseDTO(loanApplication);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;LoanApplicationResponseDTO&gt; getFilteredLoanApplications() {
+<b class="fc">&nbsp;        List&lt;LoanApplication&gt; filteredLoanApplications = repository.findAll();</b>
+<b class="fc">&nbsp;        return RequestMapper.getLoanApplicationResponseDTO(filteredLoanApplications);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>

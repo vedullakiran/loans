@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > WeeklyPaymentTermGeneratorGenerator</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.aspire.loan.strategy.paymentTerm</a>
+</div>
+
+<h1>Coverage Summary for Class: WeeklyPaymentTermGeneratorGenerator (com.aspire.loan.strategy.paymentTerm)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WeeklyPaymentTermGeneratorGenerator</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (27/27)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WeeklyPaymentTermGeneratorGenerator$MockitoMock$Y3kvHO6a</td>
+  </tr>
+  <tr>
+    <td class="name">WeeklyPaymentTermGeneratorGenerator$MockitoMock$Y3kvHO6a$auxiliary$0FPlC6rL</td>
+  </tr>
+  <tr>
+    <td class="name">WeeklyPaymentTermGeneratorGenerator$MockitoMock$Y3kvHO6a$auxiliary$9yG3j22N</td>
+  </tr>
+  <tr>
+    <td class="name">WeeklyPaymentTermGeneratorGenerator$MockitoMock$Y3kvHO6a$auxiliary$eU9FEag5</td>
+  </tr>
+  <tr>
+    <td class="name">WeeklyPaymentTermGeneratorGenerator$MockitoMock$Y3kvHO6a$auxiliary$XHdzVsgd</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (27/27)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.aspire.loan.strategy.paymentTerm;
+&nbsp;
+&nbsp;import com.aspire.loan.entities.Loan;
+&nbsp;import com.aspire.loan.entities.LoanApplication;
+&nbsp;import com.aspire.loan.entities.PaymentTerm;
+&nbsp;import com.aspire.loan.entities.enums.PaymentTermStatus;
+&nbsp;import com.aspire.loan.entities.enums.PaymentTermType;
+&nbsp;import lombok.RequiredArgsConstructor;
+&nbsp;import lombok.extern.slf4j.Slf4j;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.math.RoundingMode;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.time.ZoneId;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Calendar;
+&nbsp;import java.util.Date;
+&nbsp;import java.util.List;
+&nbsp;
+<b class="fc">&nbsp;@Slf4j</b>
+&nbsp;@Component
+<b class="fc">&nbsp;@RequiredArgsConstructor</b>
+&nbsp;public class WeeklyPaymentTermGeneratorGenerator implements PaymentTermGeneratorStrategy {
+<b class="fc">&nbsp;    private static final Integer NUMBER_OF_DAYS = 7;</b>
+&nbsp;    @Override
+&nbsp;    public PaymentTermType getPaymentTermType() {
+<b class="fc">&nbsp;        return PaymentTermType.WEEKLY;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public List&lt;PaymentTerm&gt; generatePaymentTerms(Loan loan, LoanApplication loanApplication) {
+<b class="fc">&nbsp;        List&lt;PaymentTerm&gt; paymentTerms = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;        // Extract loan details
+<b class="fc">&nbsp;        Long loanId = loan.getId();</b>
+<b class="fc">&nbsp;        String userId = loan.getLoanApplication().getUserId();</b>
+<b class="fc">&nbsp;        BigDecimal totalAmount = loan.getLoanApplication().getAmountRequested();</b>
+<b class="fc">&nbsp;        int termCount = loanApplication.getPaymentTermCount();</b>
+<b class="fc">&nbsp;        BigDecimal amountPerTerm = totalAmount.divide(BigDecimal.valueOf(termCount), 2, RoundingMode.HALF_UP);</b>
+&nbsp;
+<b class="fc">&nbsp;        Date nextDueDate = loanApplication.getReviewedAt();</b>
+<b class="fc">&nbsp;        log.debug(&quot;Generating {} weekly payment terms for loanId: {}, userId: {}&quot;, termCount, loanId, userId);</b>
+&nbsp;
+<b class="fc">&nbsp;        for (int i = 0; i &lt; termCount; i++) {</b>
+<b class="fc">&nbsp;            PaymentTerm paymentTerm = new PaymentTerm()</b>
+<b class="fc">&nbsp;                    .setLoanId(loanId)</b>
+<b class="fc">&nbsp;                    .setTermAmount(amountPerTerm)</b>
+<b class="fc">&nbsp;                    .setStatus(PaymentTermStatus.PENDING)</b>
+<b class="fc">&nbsp;                    .setAmountPaid(BigDecimal.ZERO);</b>
+<b class="fc">&nbsp;            Calendar calendar = Calendar.getInstance();</b>
+<b class="fc">&nbsp;            calendar.setTime(nextDueDate);</b>
+&nbsp;
+<b class="fc">&nbsp;            calendar.add(Calendar.DATE, NUMBER_OF_DAYS);</b>
+<b class="fc">&nbsp;            nextDueDate = calendar.getTime();</b>
+<b class="fc">&nbsp;            paymentTerm.setDueDate(nextDueDate);</b>
+<b class="fc">&nbsp;            paymentTerms.add(paymentTerm);</b>
+&nbsp;
+<b class="fc">&nbsp;            log.debug(&quot;Generated payment term {} - Due Date: {}, Due Amount: {}&quot;, i + 1, paymentTerm.getDueDate(), paymentTerm.getTermAmount());</b>
+&nbsp;
+&nbsp;        }
+<b class="fc">&nbsp;        log.info(&quot;Generated {} weekly payment terms for loanId: {}, userId: {}&quot;, termCount, loanId, userId);</b>
+&nbsp;
+<b class="fc">&nbsp;        return paymentTerms;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-09-18 15:18</div>
+</div>
+</body>
+</html>
