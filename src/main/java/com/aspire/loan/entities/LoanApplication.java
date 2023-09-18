@@ -8,44 +8,25 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Date;
 
 @Data
 @Accessors(chain = true)
 @Entity
 @Table(name = "loan_application")
-public class LoanApplication {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class LoanApplication extends BaseEntity {
     private String userId;
     private BigDecimal amountRequested;
-    private BigDecimal amountApproved;
     private PaymentTermType termType;
     private Integer paymentTermCount;
     private String reviewedBy;
-    private Long reviewedAt;
     private LoanApplicationStatus status;
-
-    @Column(name = "createdAt", nullable = false, updatable = false)
-    private long createdAt;
-    private long updatedAt;
     private String createdBy;
     private String updatedBy;
 
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = System.currentTimeMillis();
-        this.updatedAt = System.currentTimeMillis();
-        // TODO: update createdBy field
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = System.currentTimeMillis();
-        // TODO: update  updatedBy field
-    }
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date reviewedAt;
 
     public void approve() {
         if (status == LoanApplicationStatus.PENDING) {
@@ -61,5 +42,10 @@ public class LoanApplication {
         } else {
             throw new IllegalStateException("Loan application status cannot be changed.");
         }
+    }
+
+    public LoanApplication setId(Long id) {
+        super.setId(id);
+        return this;
     }
 }

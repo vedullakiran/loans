@@ -5,7 +5,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import com.aspire.loan.entities.Loan;
@@ -21,6 +24,7 @@ public class WeeklyPaymentTermGeneratorGeneratorTest {
     @InjectMocks
     private WeeklyPaymentTermGeneratorGenerator paymentTermGenerator;
 
+
     @BeforeEach
     public void setup() {
         paymentTermGenerator = new WeeklyPaymentTermGeneratorGenerator();
@@ -29,14 +33,14 @@ public class WeeklyPaymentTermGeneratorGeneratorTest {
     @Test
     public void testGeneratePaymentTerms() {
         // Create a sample loan and loan application
-        Loan loan = new Loan();
-        loan.setId(1L);
-        loan.setUserId("user123");
-        loan.setAmountSanctioned(new BigDecimal(1000));
+        LoanApplication loanApplication = new LoanApplication().setId(1L)
+                .setAmountRequested(BigDecimal.valueOf(1000))
+                .setReviewedAt(new Date())
+                .setPaymentTermCount(4);
 
-        LoanApplication loanApplication = new LoanApplication();
-        loanApplication.setPaymentTermCount(4);
-        loanApplication.setCreatedAt(Instant.now().toEpochMilli());
+        Loan loan = new Loan().setId(1L).setLoanApplication(loanApplication);
+
+
 
         // Generate payment terms using the generator
         List<PaymentTerm> paymentTerms = paymentTermGenerator.generatePaymentTerms(loan, loanApplication);
@@ -45,14 +49,20 @@ public class WeeklyPaymentTermGeneratorGeneratorTest {
         assertEquals(4, paymentTerms.size());
 
         // Verify that payment terms have correct due dates and amounts
-        long nextDueDate = Instant.ofEpochMilli(loanApplication.getCreatedAt()).plus(7, ChronoUnit.DAYS).toEpochMilli();
+
+        Date nextDueDate = loanApplication.getReviewedAt();
         BigDecimal expectedAmountPerTerm = new BigDecimal("250.00");
 
         for (int i = 0; i < paymentTerms.size(); i++) {
             PaymentTerm paymentTerm = paymentTerms.get(i);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nextDueDate);
+
+            calendar.add(Calendar.DATE, 7);
+            nextDueDate = calendar.getTime();
             // Verify due date
             assertEquals(nextDueDate, paymentTerm.getDueDate());
-            nextDueDate = Instant.ofEpochMilli(nextDueDate).plus(7, ChronoUnit.DAYS).toEpochMilli();
 
             // Verify due amount
             assertEquals(expectedAmountPerTerm, paymentTerm.getTermAmount());

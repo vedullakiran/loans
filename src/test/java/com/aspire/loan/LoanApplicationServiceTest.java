@@ -2,17 +2,16 @@ package com.aspire.loan;
 
 import com.aspire.loan.command.StatusUpdateCommand;
 import com.aspire.loan.command.StatusUpdateCommandFactory;
-import com.aspire.loan.command.impl.ApproveCommand;
 import com.aspire.loan.command.impl.DeclineCommand;
 import com.aspire.loan.entities.LoanApplication;
 import com.aspire.loan.entities.enums.LoanApplicationStatus;
 import com.aspire.loan.repositories.LoanApplicationRepository;
 import com.aspire.loan.request.AdminActionRequestDTO;
 import com.aspire.loan.request.LoanApplicationRequestDTO;
-import com.aspire.loan.request.UserLoanApplicationRequestDTO;
 import com.aspire.loan.response.LoanApplicationResponseDTO;
 import com.aspire.loan.services.LoanApplicationService;
 import com.aspire.loan.services.impl.LoanApplicationServiceImpl;
+import com.aspire.loan.validation.AccessControlValidation;
 import com.aspire.loan.validation.LoanApplicationValidation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,15 +36,17 @@ public class LoanApplicationServiceTest {
     private LoanApplicationValidation loanApplicationValidation;
 
     private StatusUpdateCommand statusUpdateCommand;
+    private AccessControlValidation accessControlValidation;
 
     @BeforeEach
     public void setup() {
         loanApplicationValidation = mock(LoanApplicationValidation.class);
         statusUpdateCommandFactory = mock(StatusUpdateCommandFactory.class);
         loanApplicationRepository = mock(LoanApplicationRepository.class);
+        accessControlValidation = mock(AccessControlValidation.class);
         statusUpdateCommand = mock(DeclineCommand.class);
         loanApplicationService = new LoanApplicationServiceImpl(loanApplicationRepository, statusUpdateCommandFactory,
-                loanApplicationValidation);
+                loanApplicationValidation,accessControlValidation );
     }
 
     @Test
@@ -55,7 +56,6 @@ public class LoanApplicationServiceTest {
         LoanApplication loanApplication = TestUtils.getLoanApplication();
 
         when(loanApplicationRepository.save(any(LoanApplication.class))).thenReturn(loanApplication);
-
         LoanApplicationResponseDTO response = loanApplicationService.createLoanApplication(request);
 
         assertNotNull(response);
@@ -70,10 +70,10 @@ public class LoanApplicationServiceTest {
     public void testGetLoanApplicationById() {
         Long loanApplicationId = 1L;
         LoanApplication loanApplication = TestUtils.getLoanApplication();
-
+        String userId = "userId";
         when(loanApplicationRepository.findById(loanApplicationId)).thenReturn(Optional.of(loanApplication));
 
-        LoanApplicationResponseDTO response = loanApplicationService.getLoanApplicationById(loanApplicationId);
+        LoanApplicationResponseDTO response = loanApplicationService.getLoanApplicationById(loanApplicationId, userId);
 
         assertNotNull(response);
         assertEquals(loanApplicationId, response.getId());

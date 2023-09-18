@@ -36,8 +36,8 @@ public class RequestMapper {
                 .setAmountRequested(request.getAmountRequested())
                 .setPaymentTermCount(request.getPaymentTermCount())
                 .setTermType(request.getTermType())
-                .setAmountApproved(request.getAmountApproved())
                 .setReviewedBy(request.getReviewedBy())
+                .setReviewedAt(request.getReviewedAt())
                 .setStatus(request.getStatus());
     }
 
@@ -51,19 +51,15 @@ public class RequestMapper {
     public Loan getLoan(LoanApplication application) {
         return new Loan()
                 .setLoanApplication(application)
-                .setUserId(application.getUserId())
                 .setStatus(LoanStatus.APPROVED)
-                .setAmountRepaid(BigDecimal.ZERO)
-                .setAmountSanctioned(application.getAmountApproved());
+                .setAmountRepaid(BigDecimal.ZERO);
     }
 
     public static LoanResponseDTO getLoanDTO(Loan loan) {
         return new LoanResponseDTO()
                 .setId(loan.getId())
-                .setLoanApplicationId(loan.getLoanApplication().getId())
+                .setLoanApplication(getLoanApplicationResponseDTO(loan.getLoanApplication()))
                 .setStatus(loan.getStatus())
-                .setUserId(loan.getUserId())
-                .setAmountSanctioned(loan.getAmountSanctioned())
                 .setAmountRepaid(loan.getAmountRepaid());
     }
 

@@ -11,16 +11,18 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class WeeklyPaymentTermGeneratorGenerator implements PaymentTermGeneratorStrategy {
-
+    private static final Integer NUMBER_OF_DAYS = 7;
     @Override
     public PaymentTermType getPaymentTermType() {
         return PaymentTermType.WEEKLY;
@@ -32,12 +34,12 @@ public class WeeklyPaymentTermGeneratorGenerator implements PaymentTermGenerator
 
         // Extract loan details
         Long loanId = loan.getId();
-        String userId = loan.getUserId();
-        BigDecimal totalAmount = loan.getAmountSanctioned();
+        String userId = loan.getLoanApplication().getUserId();
+        BigDecimal totalAmount = loan.getLoanApplication().getAmountRequested();
         int termCount = loanApplication.getPaymentTermCount();
         BigDecimal amountPerTerm = totalAmount.divide(BigDecimal.valueOf(termCount), 2, RoundingMode.HALF_UP);
 
-        long nextDueDate = loanApplication.getCreatedAt();
+        Date nextDueDate = loanApplication.getReviewedAt();
         log.debug("Generating {} weekly payment terms for loanId: {}, userId: {}", termCount, loanId, userId);
 
         for (int i = 0; i < termCount; i++) {
@@ -46,8 +48,11 @@ public class WeeklyPaymentTermGeneratorGenerator implements PaymentTermGenerator
                     .setTermAmount(amountPerTerm)
                     .setStatus(PaymentTermStatus.PENDING)
                     .setAmountPaid(BigDecimal.ZERO);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(nextDueDate);
 
-            nextDueDate = Instant.ofEpochMilli(nextDueDate).plus(7, ChronoUnit.DAYS).toEpochMilli();
+            calendar.add(Calendar.DATE, NUMBER_OF_DAYS);
+            nextDueDate = calendar.getTime();
             paymentTerm.setDueDate(nextDueDate);
             paymentTerms.add(paymentTerm);
 

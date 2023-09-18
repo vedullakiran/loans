@@ -2,6 +2,7 @@ package com.aspire.loan;
 
 
 import com.aspire.loan.entities.Loan;
+import com.aspire.loan.entities.LoanApplication;
 import com.aspire.loan.entities.enums.LoanStatus;
 import com.aspire.loan.repositories.LoanRepository;
 import com.aspire.loan.request.RepaymentRequestDTO;
@@ -59,9 +60,10 @@ public class LoanServiceTest {
     public void testGetLoanById() {
         Long loanId = 1L;
         String userId = "user123";
+        LoanApplication loanApplication = new LoanApplication().setUserId(userId);
         Loan loan = new Loan()
-                .setUserId(userId)
-                .setId(loanId);
+                .setId(loanId)
+                .setLoanApplication(loanApplication);
 
         when(loanRepository.findById(loanId)).thenReturn(Optional.of(loan));
 
@@ -75,12 +77,16 @@ public class LoanServiceTest {
     public void testGetLoansForUser() {
         String userId = "user123";
         Set<LoanStatus> statusSet = new HashSet<>(Arrays.asList(LoanStatus.REPAY_IN_PROGRESS, LoanStatus.APPROVED));
-        List<Loan> loans = new ArrayList<>();
-        loans.add(new Loan());
-        loans.add(new Loan());
+        LoanApplication loanApplication = new LoanApplication().setUserId(userId);
 
-        when(loanRepository.findByStatusIsInAndUserId(statusSet, userId)).thenReturn(loans);
-        when(loanRepository.findByUserId(userId)).thenReturn(loans);
+        List<Loan> loans = new ArrayList<>();
+        Loan loan1 = new Loan().setLoanApplication(loanApplication);
+        Loan loan2 = new Loan().setLoanApplication(loanApplication);
+        loans.add(loan1);
+        loans.add(loan2);
+
+        when(loanRepository.findByStatusIsInAndLoanApplication_UserId(statusSet, userId)).thenReturn(loans);
+        when(loanRepository.findByLoanApplication_UserId(userId)).thenReturn(loans);
 
         List<LoanResponseDTO> loanResponseDTOs = loanService.getLoansForUser(userId, statusSet);
 
@@ -96,8 +102,8 @@ public class LoanServiceTest {
     public void testRepayLoan() {
         Long loanId = 1L;
         RepaymentRequestDTO requestDTO = new RepaymentRequestDTO();
-        Loan loan = new Loan();
-        loan.setId(loanId);
+        LoanApplication loanApplication = new LoanApplication();
+        Loan loan = new Loan().setLoanApplication(loanApplication).setId(loanId);
 
         when(loanRepository.findById(loanId)).thenReturn(Optional.of(loan));
 

@@ -7,33 +7,21 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Accessors(chain = true)
 @Entity
 @Table(name = "payment_terms")
-public class PaymentTerm {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class PaymentTerm extends BaseEntity {
     private Long loanId;
-    private long dueDate;
+    private Date dueDate;
     private BigDecimal termAmount;
     private PaymentTermStatus status;
     private BigDecimal amountPaid;
 
-    private long createdAt;
-    private long updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = System.currentTimeMillis();
-        this.updatedAt = System.currentTimeMillis();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = System.currentTimeMillis();
+    public PaymentTerm setId(Long id) {
+        super.setId(id);
+        return this;
     }
 }

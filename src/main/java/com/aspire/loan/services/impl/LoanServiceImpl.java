@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class LoanServiceImpl implements LoanService {
         log.info("Fetching loan by ID: {}", loanId);
         Loan loan = loanRepository.findById(loanId)
                 .orElseThrow(() -> new EntityNotFoundException("Loan not found for id: " + loanId));
-        accessControlValidation.validateUserAccessToLoan(userId, loan);
+        accessControlValidation.validateUserAccessToLoan(userId, loan.getLoanApplication());
         return RequestMapper.getLoanDTO(loan);
     }
 
@@ -54,9 +53,9 @@ public class LoanServiceImpl implements LoanService {
         log.info("Fetching loans for user: {}", userId);
         List<Loan> loans;
         if (isNull(statusSet) || statusSet.isEmpty()) {
-            loans = loanRepository.findByUserId(userId);
+            loans = loanRepository.findByLoanApplication_UserId(userId);
         } else
-            loans = loanRepository.findByStatusIsInAndUserId(statusSet, userId);
+            loans = loanRepository.findByStatusIsInAndLoanApplication_UserId(statusSet, userId);
         return loans.stream()
                 .map(RequestMapper::getLoanDTO)
                 .collect(Collectors.toList());
@@ -67,8 +66,7 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponseDTO repayLoan(Long loanId, RepaymentRequestDTO requestDTO) {
         log.info("Processing repayment for loan ID: {}", loanId);
         Loan loan = loanRepository.findById(loanId).orElseThrow(() -> new EntityNotFoundException("Loan not found for id: " + loanId));
-        validationService.validateLoanEligibility(loan);
-        validationService.validateLoanAmount(loan, requestDTO.getAmount());
+        validationService.validateLoanEligibility(loan, requestDTO);
         repaymentStrategy.processRepayment(loan, RequestMapper.getRepayment(loanId, requestDTO));
         loanRepository.save(loan);
         return RequestMapper.getLoanDTO(loan);

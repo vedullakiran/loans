@@ -1,6 +1,7 @@
 package com.aspire.loan;
 
 import com.aspire.loan.entities.Loan;
+import com.aspire.loan.entities.LoanApplication;
 import com.aspire.loan.entities.PaymentTerm;
 import com.aspire.loan.entities.Repayment;
 import com.aspire.loan.entities.enums.LoanStatus;
@@ -44,8 +45,9 @@ public class DefaultRepaymentStrategyTest {
     public void testProcessRepayment_FullyPayTerms() {
         // Create a sample loan, repayment, and unpaid payment terms
         Loan loan = new Loan();
+        LoanApplication loanApplication = new LoanApplication().setId(1L).setAmountRequested(BigDecimal.valueOf(1000));
         loan.setId(1L);
-        loan.setAmountSanctioned(new BigDecimal(1000));
+        loan.setLoanApplication(loanApplication);
         loan.setStatus(LoanStatus.REPAY_IN_PROGRESS);
         loan.setAmountRepaid(new BigDecimal(250));
 
@@ -91,8 +93,10 @@ public class DefaultRepaymentStrategyTest {
     public void testProcessRepayment_PartiallyPayTerms() {
         // Create a sample loan, repayment, and unpaid payment terms
         Loan loan = new Loan();
+        LoanApplication loanApplication = new LoanApplication().setId(1L).setAmountRequested(BigDecimal.valueOf(1000));
+
         loan.setId(1L);
-        loan.setAmountSanctioned(new BigDecimal(1000));
+        loan.setLoanApplication(loanApplication);
         loan.setStatus(LoanStatus.REPAY_IN_PROGRESS);
         loan.setAmountRepaid(new BigDecimal(250));
 

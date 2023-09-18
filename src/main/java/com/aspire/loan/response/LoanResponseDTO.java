@@ -12,11 +12,8 @@ import java.util.Date;
 @Accessors(chain = true)
 public class LoanResponseDTO {
     private Long id;
-    private Long loanApplicationId;
+    private LoanApplicationResponseDTO loanApplication;
     private LoanStatus status;
-    private String userId;
-    private BigDecimal amountSanctioned;
     private BigDecimal amountRepaid;
-    private LocalDate nextDueDate;
 }
 

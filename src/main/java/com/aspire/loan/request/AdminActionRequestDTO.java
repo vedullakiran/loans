@@ -12,6 +12,5 @@ import java.math.BigDecimal;
 public class AdminActionRequestDTO {
     @JsonIgnore private String adminId;
     private LoanApplicationStatus status;
-    private BigDecimal approvedAmount;
 }
 

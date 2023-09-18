@@ -12,18 +12,16 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @Entity
 @Table(name = "loan")
-public class Loan {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Loan extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "loanApplicationId")
+    @JoinColumn(name = "loan_application_id")
     private LoanApplication loanApplication;
 
-    private Long loanAppId;
     private LoanStatus status;
-    private String userId;
-    private BigDecimal amountSanctioned;
     private BigDecimal amountRepaid;
+    public Loan setId(Long id) {
+        super.setId(id);
+        return this;
+    }
 }

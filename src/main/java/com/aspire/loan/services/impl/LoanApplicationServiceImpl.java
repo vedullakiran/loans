@@ -8,10 +8,10 @@ import com.aspire.loan.exceptions.EntityNotFoundException;
 import com.aspire.loan.repositories.LoanApplicationRepository;
 import com.aspire.loan.request.AdminActionRequestDTO;
 import com.aspire.loan.request.LoanApplicationRequestDTO;
-import com.aspire.loan.request.UserLoanApplicationRequestDTO;
 import com.aspire.loan.response.LoanApplicationResponseDTO;
 import com.aspire.loan.services.LoanApplicationService;
 import com.aspire.loan.utils.RequestMapper;
+import com.aspire.loan.validation.AccessControlValidation;
 import com.aspire.loan.validation.LoanApplicationValidation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     private final LoanApplicationRepository repository;
     private final StatusUpdateCommandFactory statusUpdateCommandFactory;
     private final LoanApplicationValidation loanApplicationValidation;
-
+    private final AccessControlValidation accessControlValidation;
 
     @Override
     public LoanApplicationResponseDTO createLoanApplication(LoanApplicationRequestDTO request) {
@@ -44,11 +44,12 @@ public class LoanApplicationServiceImpl implements LoanApplicationService {
     }
 
     @Override
-    public LoanApplicationResponseDTO getLoanApplicationById(Long id) {
+    public LoanApplicationResponseDTO getLoanApplicationById(Long id, String userId) {
         log.info("Fetching loan application by ID: {}", id);
         LoanApplication loanApplication = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Loan application not found for ID:" + id));
         log.info("Loan application fetched successfully for ID: {}", id);
+        accessControlValidation.validateUserAccessToLoan(userId, loanApplication);
         return RequestMapper.getLoanApplicationResponseDTO(loanApplication);
     }
 

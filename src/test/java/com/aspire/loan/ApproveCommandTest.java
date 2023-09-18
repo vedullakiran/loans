@@ -40,7 +40,6 @@ public class ApproveCommandTest {
         LoanApplication loanApplication = new LoanApplication().setStatus(LoanApplicationStatus.PENDING);
         AdminActionRequestDTO requestDTO = new AdminActionRequestDTO();
         requestDTO.setAdminId("admin123");
-        requestDTO.setApprovedAmount(BigDecimal.valueOf(1000));
 
         // Mock the behavior of loanService and paymentTermService
         Loan loan = new Loan();
@@ -52,7 +51,6 @@ public class ApproveCommandTest {
 
         // Verify that the loan application and related entities were updated correctly
         assertEquals("admin123", loanApplication.getReviewedBy());
-        assertEquals(BigDecimal.valueOf(1000), loanApplication.getAmountApproved());
         assertNotNull(loanApplication.getReviewedAt());
         assertEquals(LoanApplicationStatus.APPROVED, loanApplication.getStatus());
         assertNotNull(loan);

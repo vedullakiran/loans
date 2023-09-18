@@ -36,7 +36,6 @@ public class TestUtils {
 
     public static AdminActionRequestDTO getAdminActionRequestDTO() {
         return new AdminActionRequestDTO().setAdminId("adminId")
-                .setApprovedAmount(BigDecimal.valueOf(10000))
                 .setStatus(LoanApplicationStatus.DECLINED);
     }
 }

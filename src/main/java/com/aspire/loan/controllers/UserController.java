@@ -31,8 +31,8 @@ public class UserController {
     }
 
     @GetMapping("/{loanApplicationId}")
-    ResponseEntity<LoanApplicationResponseDTO> getLoanApplication(@PathVariable Long loanApplicationId) {
-        LoanApplicationResponseDTO loanApplication = loanApplicationServiceImpl.getLoanApplicationById(loanApplicationId);
+    ResponseEntity<LoanApplicationResponseDTO> getLoanApplication(@PathVariable Long loanApplicationId, @RequestHeader String userId) {
+        LoanApplicationResponseDTO loanApplication = loanApplicationServiceImpl.getLoanApplicationById(loanApplicationId, userId);
         return ResponseEntity.ok(loanApplication);
     }
 }

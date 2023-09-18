@@ -3,6 +3,9 @@ package com.aspire.loan.validation;
 import com.aspire.loan.entities.Loan;
 import com.aspire.loan.entities.enums.LoanStatus;
 import com.aspire.loan.exceptions.InvalidLoanStatusException;
+import com.aspire.loan.exceptions.UserAccessDeniedException;
+import com.aspire.loan.exceptions.ValidateRequestException;
+import com.aspire.loan.request.RepaymentRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -12,22 +15,28 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class LoanValidation {
 
-    public void validateLoanEligibility(Loan loan) {
+    public void validateLoanEligibility(Loan loan, RepaymentRequestDTO requestDTO) {
         // Additional status checks
         if (loan.getStatus() == LoanStatus.REPAID) {
             throw new InvalidLoanStatusException("Loan has already been repaid.");
         }
+
+        if (!loan.getLoanApplication().getUserId().equals(requestDTO.getUserId())) {
+            throw new UserAccessDeniedException("User does not have access for this loan");
+        }
+
+        validateLoanAmount(loan, requestDTO.getAmount());
     }
-    public void validateLoanAmount(Loan loan, BigDecimal repaymentAmount) {
+    public void validateLoanAmount(Loan loan, BigDecimal amount) {
         BigDecimal totalAmountToBePaid = calculateTotalAmountToBePaid(loan);
 
-        if (repaymentAmount.compareTo(totalAmountToBePaid) > 0) {
-            throw new IllegalArgumentException("Repayment amount exceeds the total amount to be paid for the loan.");
+        if (amount.compareTo(totalAmountToBePaid) > 0) {
+            throw new ValidateRequestException("Repayment amount exceeds the total amount to be paid for the loan.");
         }
     }
 
     private BigDecimal calculateTotalAmountToBePaid(Loan loan) {
-        return loan.getAmountSanctioned().subtract(loan.getAmountRepaid());
+        return loan.getLoanApplication().getAmountRequested().subtract(loan.getAmountRepaid());
     }
 }
 

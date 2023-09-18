@@ -77,7 +77,7 @@ public class DefaultRepaymentStrategy implements RepaymentStrategy {
         BigDecimal totalAmountRepaid = loan.getAmountRepaid().add(repayment.getAmount());
         loan.setAmountRepaid(totalAmountRepaid);
 
-        if (loan.getAmountRepaid().equals(loan.getAmountSanctioned())) {
+        if (loan.getAmountRepaid().equals(loan.getLoanApplication().getAmountRequested())) {
             loan.setStatus(LoanStatus.REPAID);
         }
     }

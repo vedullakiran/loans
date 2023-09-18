@@ -12,20 +12,13 @@ import java.math.BigDecimal;
 @Accessors(chain = true)
 @Entity
 @Table(name = "repayment")
-public class Repayment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Repayment extends BaseEntity {
     private Long loanId;
     private BigDecimal amount;
-
-    private long createdAt;
     private String createdBy;
 
-    @PrePersist
-    protected void onCreate() {
-        this.createdAt = System.currentTimeMillis();
+    public Repayment setId(Long id) {
+        super.setId(id);
+        return this;
     }
 }

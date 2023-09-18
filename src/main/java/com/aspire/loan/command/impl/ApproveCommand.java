@@ -11,6 +11,8 @@ import com.aspire.loan.utils.RequestMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 @Component
 @RequiredArgsConstructor
 public class ApproveCommand implements StatusUpdateCommand {
@@ -19,8 +21,7 @@ public class ApproveCommand implements StatusUpdateCommand {
     @Override
     public void execute(LoanApplication loanApplication, AdminActionRequestDTO requestDTO) {
         loanApplication.setReviewedBy(requestDTO.getAdminId());
-        loanApplication.setAmountApproved(requestDTO.getApprovedAmount());
-        loanApplication.setReviewedAt(System.currentTimeMillis());
+        loanApplication.setReviewedAt(new Date());
         loanApplication.approve();
         Loan loan = RequestMapper.getLoan(loanApplication);
         loanService.createLoan(loan);

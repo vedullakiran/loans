@@ -40,8 +40,6 @@ public class LoanApplicationValidation {
             throw new ValidateRequestException("Invalid status transition.");
         }
 
-        validateAmount(request.getApprovedAmount());
-        // Add more validations as needed
     }
 
     private boolean isValidStatusTransition(LoanApplicationStatus currentStatus, LoanApplicationStatus newStatus) {
